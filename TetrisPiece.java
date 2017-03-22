@@ -24,7 +24,7 @@ public class TetrisPiece{
 
     private String random(){
 	Random rand=new Random();
-	 int num=rand.nextInt(1);
+	 int num=rand.nextInt(7);
 	 if(num==0){
 	     shape="O";}
 	 else if(num==1){
