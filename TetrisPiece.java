@@ -1,27 +1,25 @@
 import java.util.ArrayList;
 import java.util.Random;
-public class TetrisPiece{
+import java.awt.Color;
+public class TetrisPiece extends Gridy{
     private Boolean speed=false;
     private String shape;
     private String direction;
     private int rotation=0;
-    private int _pieceX=0;
-    private int _pieceY=0;
-    private int P2X=0;
-    private int P2Y=0;
-    private int P3X=0;
-    private int P3Y=0;
-    private int P4X=0;
-    private int P4Y=0;
-    private ArrayList<Integer> location = new ArrayList<Integer>();
-   
-    /** This constructor takes no argument. However, every time the constructor is called, it invokes the method random in the current class 
-     ** and which will generate a new Tetris piece and restores the value inside the instance variable shape. 
-     */
-    public TetrisPiece(){
-        shape=random();
-    }
+    public int x=5;
+    public int y=5;
+    private Boolean hitSide=false;
+    private Boolean hitBottom=false;
+    TetrisPiece tp;
+    private Color[][] miniGrid;
+    private Color[][]box1;
 
+    //Gridy grid=new Gridy();
+    
+    public TetrisPiece(){
+	shape=random();
+	PieceShow();
+    }
     private String random(){
 	Random rand=new Random();
 	 int num=rand.nextInt(7);
@@ -41,507 +39,474 @@ public class TetrisPiece{
 	     shape="T";}
 	 return shape;
     }
+    
+    public int getX(){	
+	return x;
+    }
 
-    public ArrayList<Integer> getLocation(){
-	location=PieceShow();
-	return location;
+    public int getY(){
+	return y;
+    }
+
+    public Color[][] getMiniGrid(){
+	return miniGrid;
     }
     
-    public ArrayList<Integer> getLocation(String Direction){
-	location=PieceMovement(Direction);
-	return location;
-    }
+    public void setMovement(String direction1){
+        direction=direction1;
+	PieceMovement();
+    }		 
     
-    public ArrayList<Integer> getLocation(Boolean Speed){
-	location=dropping(speed);
-	return location;
-    }
-    
-    
-    //store cordinates of 7 shapes in an array list
-    private ArrayList<Integer> PieceShow(){	
+    //store 4 sets of cordinates of 7 shapes in an array list called location.
+    public void PieceShow(){	
 	switch(shape){
 	case "O":
-	    _pieceX=2;
-	    _pieceY=4;
-	    P2X=_pieceX+1;
-	    P2Y=_pieceY;
-	    P3X=_pieceX;
-	    P3Y=_pieceY+1;
-	    P4X=_pieceX+1;
-	    P4Y=_pieceY+1;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==2)||(c==2 && r==1)||(c==2 && r==2)){
+			miniGrid[c][r]=Color.BLUE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
+	    
 	case "L":
-	    _pieceX=3;
-	    _pieceY=4;
-	    P2X=_pieceX;
-	    P2Y=_pieceY-1;
-	    P3X=_pieceX;
-	    P3Y=_pieceY+1;
-	    P4X=_pieceX-1;
-	    P4Y=_pieceY+1;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==1)||(c==2 && r==1)||(c==2 && r==0)){
+			miniGrid[c][r]=Color.RED;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
+	    
 	    break;
 	case "S":
-	    _pieceX=3;
-	    _pieceY=4;
-	    P2X=_pieceX;
-	    P2Y=_pieceY-1;
-	    P3X=_pieceX+1;
-	    P3Y=_pieceY-1;
-	    P4X=_pieceX-1;
-	    P4Y=_pieceY;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==1)||(c==0 && r==2)||(c==1 && r==0)){
+			miniGrid[c][r]=Color.GREEN;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case "Z":
-	    _pieceX=3;
-	    _pieceY=4;
-	    P2X=_pieceX-1;
-	    P2Y=_pieceY-1;
-	    P3X=_pieceX;
-	    P3Y=_pieceY-1;
-	    P4X=_pieceX+1;
-	    P4Y=_pieceY;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==0)||(c==0 && r==1)||(c==1 && r==2)){
+			miniGrid[c][r]=Color.ORANGE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }	    
 	    break;
 	case "J":
-	    _pieceX=2;
-	    _pieceY=4;
-	    P2X=_pieceX-1;
-	    P2Y=_pieceY;
-	    P3X=_pieceX+1;
-	    P3Y=_pieceY;
-	    P4X=_pieceX+1;
-	    P4Y=_pieceY-1;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==0)||(c==1 && r==2)||(c==0 && r==2)){
+			miniGrid[c][r]=Color.GRAY;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
+	    
 	    break;
 	case "I":
-	    _pieceX=2;
-	    _pieceY=4;
-	    P2X=_pieceX;
-	    P2Y=_pieceY-1;
-	    P3X=_pieceX;
-	    P3Y=_pieceY+1;
-	    P4X=_pieceX;
-	    P4Y=_pieceY+2;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==1)||(c==2 && r==1)||(c==3 && r==1)){
+			miniGrid[c][r]=Color.YELLOW;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }	    
 	    break;
 	case "T":
-	    _pieceX=3;
-	    _pieceY=4;
-	    P2X=_pieceX-1;
-	    P2Y=_pieceY;
-	    P3X=_pieceX;
-	    P3Y=_pieceY-1;
-	    P4X=_pieceX;
-	    P4Y=_pieceY+1;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==0)||(c==0 && r==1)||(c==2 && r==1)){
+			miniGrid[c][r]=Color.BLUE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
-	}
-
-	//update location
-        location.add(_pieceX);
-	location.add(_pieceY);
-	location.add(P2X);
-	location.add(P2Y);
-	location.add(P3X);
-	location.add(P3Y);
-	location.add(P4X);
-	location.add(P4Y);
-
-	return (location);
+	}      
     }
-
-    //store new coordinates of shapes when pieces are moved to new coords
-    private ArrayList<Integer> PieceMovement(String Direction){
-	direction=Direction;
-	switch (direction){
-	    
+    public void PieceMovement(){
+	
+	switch (direction){	    
 	    //moves left
 	case "a":
-	    _pieceX=location.get(0);
-	    _pieceY=location.get(1)-1;
-	    P2X=location.get(2);
-	    P2Y=location.get(3)-1;
-	    P3X=location.get(4);
-	    P3Y=location.get(5)-1;
-	    P4X=location.get(6);
-	    P4Y=location.get(7)-1;
+	    x=x-1;
+	    //get(x,y,miniGrid);
+	    hitSide=wallCollision(x,y,miniGrid);
+	    if(hitSide==true){
+	        x=x+1;
+	    }
+	    break;	    
+	case "s":	    
+	    speed=true;
 	    break;
 	    
-	    //moves dows
-	case "s":
-	    speed=true;
-	    location=dropping(speed);
-	    return location;
-
 	    //moves right
 	case "d":
-	    _pieceX=location.get(0);
-	    _pieceY=location.get(1)+1;
-	    P2X=location.get(2);
-	    P2Y=location.get(3)+1;
-	    P3X=location.get(4);
-	    P3Y=location.get(5)+1;
-	    P4X=location.get(6);
-	    P4Y=location.get(7)+1;
+	    x=x+1;
+	    hitSide=wallCollision(x,y,miniGrid);
+	    if(hitSide==true){
+	        x=x-1;
+	    }
 	    break;
+	    
         case "w":
 	    if (rotation > 4){
 		rotation=1;}
 	    else{
 		rotation=rotation+1;}
-	    location=GetShape();
-	    return location;
-	    
-	default:
-	    _pieceX=location.get(0);
-	    _pieceY=location.get(1)+1;
-	    P2X=location.get(2);
-	    P2Y=location.get(3)+1;
-	    P3X=location.get(4);
-	    P3Y=location.get(5)+1;
-	    P4X=location.get(6);
-	    P4Y=location.get(7)+1;
-	    break;
+	    GetShape();	 	    
 	}
-
-	//updates new location coordinates
-	ArrayList<Integer> location = new ArrayList<Integer>();
-	location.add(_pieceX);
-	location.add(_pieceY);
-	location.add(P2X);
-	location.add(P2Y);
-	location.add(P3X);
-	location.add(P3Y);
-	location.add(P4X);
-	location.add(P4Y);
-
-	return (location);
     }
 
-    private ArrayList<Integer> dropping(Boolean Speed){
-	speed=Speed;
+    public void dropping(){
+	
 	if(!speed){
-	    _pieceX=location.get(0)+1;
-	    _pieceY=location.get(1);
-	    P2X=location.get(2)+1;
-	    P2Y=location.get(3);
-	    P3X=location.get(4)+1;
-	    P3Y=location.get(5);
-	    P4X=location.get(6)+1;
-	    P4Y=location.get(7);
+	    
+	    y=y+1;
+	    hitBottom=bottomCollision(x,y,miniGrid);
+	    if(hitBottom==true){
+		x=0;
+		y=0;
+	        for (int c=0; c<4; c++){
+		    for (int r=0; r<4; r++){
+			miniGrid[c][r]=Color.WHITE;}
+		}
+	    }
+	    
 	}
 	else if(speed){
-	    _pieceX=location.get(0)+2;
-	    _pieceY=location.get(1);
-	    P2X=location.get(2)+2;
-	    P2Y=location.get(3);
-	    P3X=location.get(4)+2;
-	    P3Y=location.get(5);
-	    P4X=location.get(6)+2;
-	    P4Y=location.get(7);
+	    y=y+2;
+	    hitBottom=bottomCollision(x,y,miniGrid);
+	    if(hitBottom==true){
+	        for (int c=0; c<4; c++){
+		    for (int r=0; r<4; r++){
+			miniGrid[c][r]=Color.WHITE;}
+		}
+	    }
+	    
 	}
-	ArrayList<Integer> location = new ArrayList<Integer>();
-	location.add(_pieceX);
-	location.add(_pieceY);
-	location.add(P2X);
-	location.add(P2Y);
-	location.add(P3X);
-	location.add(P3Y);
-	location.add(P4X);
-	location.add(P4Y);
-
-	return (location);
     }
 
-   public ArrayList<Integer> GetShape(){
+    //Rotation   
+   public void GetShape(){
 	if (shape.equals("O")){
-	    location=location;
 	}
+	
 	else if (shape.equals("L")){
-	    location=Lshape();
+	    Lshape();
 	}
 	else if (shape.equals("S")){
-	    location=Sshape();
+	    Sshape();
 	}
 	else if (shape.equals("Z")){
-	    location=Zshape();
+	    Zshape();
 	}
 	else if (shape.equals("I")){
-	    location=Ishape();
+	    Ishape();
 	}
 	else if (shape.equals("J")){
-	    location=Jshape();
+	    Jshape();
 	}
 	else if (shape.equals("T")){
-	    location=Tshape();
+	    Tshape();
 	}
-	return location;
     }
 
-    private ArrayList<Integer> Lshape(){
+    private void Lshape(){
 	switch(rotation){
 	case 1:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)-1;
-	    P2X=location.get(3)+1;
-	    P3Y=location.get(4)+1;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6)+2;
-	    P4X=location.get(7);
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==0)||(c==1 && r==2)||(c==2 && r==2)){
+			miniGrid[c][r]=Color.RED;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 2:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)+1;
-	    P2X=location.get(3)+1;
-	    P3Y=location.get(4)-1;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6);
-	    P4X=location.get(7)-2;
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==2 && r==1)||(c==0 && r==1)||(c==0 && r==2)){
+			miniGrid[c][r]=Color.RED;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 3:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)+1;
-	    P2X=location.get(3)-1;
-	    P3Y=location.get(4)-1;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6)-2;
-	    P4X=location.get(7);
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==2)||(c==1 && r==0)||(c==0 && r==0)){
+			miniGrid[c][r]=Color.RED;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
+	    
 	    break;
 	case 4:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)-1;
-	    P2X=location.get(3)-1;
-	    P3Y=location.get(4)+1;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6);
-	    P4X=location.get(7)+2;
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==1)||(c==2 && r==1)||(c==2 && r==0)){
+			miniGrid[c][r]=Color.RED;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
-	}
-	ArrayList<Integer> NewLocation = new ArrayList<Integer>();
-	NewLocation.add(_pieceY);
-	NewLocation.add(_pieceX);
-	NewLocation.add(P2Y);
-	NewLocation.add(P2X);
-	NewLocation.add(P3Y);
-	NewLocation.add(P3X);
-	NewLocation.add(P4Y);
-	NewLocation.add(P4X);
-	return (NewLocation);
+	}      
     }
-
-     private ArrayList<Integer> Sshape(){
+     private void Sshape(){
 	switch(rotation){
 	case 1: case 3:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)-1;
-	    P2X=location.get(3);
-	    P3Y=location.get(4)-2;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6)+1;
-	    P4X=location.get(7)+1;
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==0)||(c==1 && r==0)||(c==2 && r==1)){
+			miniGrid[c][r]=Color.GREEN;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 2: case 4:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)+1;
-	    P2X=location.get(3);
-	    P3Y=location.get(4)+2;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6)-1;
-	    P4X=location.get(7)-1;
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==1)||(c==0 && r==2)||(c==1 && r==0)){
+			miniGrid[c][r]=Color.GREEN;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
-	}
-	ArrayList<Integer> NewLocation = new ArrayList<Integer>();
-	NewLocation.add(_pieceY);
-	NewLocation.add(_pieceX);
-	NewLocation.add(P2Y);
-	NewLocation.add(P2X);
-	NewLocation.add(P3Y);
-	NewLocation.add(P3X);
-	NewLocation.add(P4Y);
-	NewLocation.add(P4X);
-	return (NewLocation);
+	}       
     }
 
-    private ArrayList<Integer> Zshape(){
+    private void Zshape(){
 	switch(rotation){
 	case 1: case 3:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2);
-	    P2X=location.get(3)+2;
-	    P3Y=location.get(4)-1;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6)-1;
-	    P4X=location.get(7)-1;
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==2 && r==0)||(c==1 && r==0)||(c==0 && r==1)){
+			miniGrid[c][r]=Color.ORANGE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 2: case 4:
-	     _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2);
-	    P2X=location.get(3)-2;
-	    P3Y=location.get(4)+1;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6)+1;
-	    P4X=location.get(7)+1;
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==0)||(c==0 && r==1)||(c==1 && r==2)){
+			miniGrid[c][r]=Color.ORANGE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	}
-	ArrayList<Integer> NewLocation = new ArrayList<Integer>();
-	NewLocation.add(_pieceY);
-	NewLocation.add(_pieceX);
-	NewLocation.add(P2Y);
-	NewLocation.add(P2X);
-	NewLocation.add(P3Y);
-	NewLocation.add(P3X);
-	NewLocation.add(P4Y);
-	NewLocation.add(P4X);
-	return (NewLocation);
     }
 
-     private ArrayList<Integer> Ishape(){
+     private void Ishape(){
 	switch(rotation){
 	case 1: case 3:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)-1;
-	    P2X=location.get(3)+1;
-	    P3Y=location.get(4)+1;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6)+2;
-	    P4X=location.get(7)-2;
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==0)||(c==1 && r==2)||(c==1 && r==3)){
+			miniGrid[c][r]=Color.YELLOW;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 2: case 4:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)+1;
-	    P2X=location.get(3)-1;
-	    P3Y=location.get(4)-1;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6)-2;
-	    P4X=location.get(7)+2;
+	     miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==1)||(c==2 && r==1)||(c==3 && r==1)){
+			miniGrid[c][r]=Color.YELLOW;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
-	}
-	ArrayList<Integer> NewLocation = new ArrayList<Integer>();
-	NewLocation.add(_pieceY);
-	NewLocation.add(_pieceX);
-	NewLocation.add(P2Y);
-	NewLocation.add(P2X);
-	NewLocation.add(P3Y);
-	NewLocation.add(P3X);
-	NewLocation.add(P4Y);
-	NewLocation.add(P4X);
-	return (NewLocation);
+	}      
     }
 
-     private ArrayList<Integer> Jshape(){
+     private void Jshape(){
 	switch(rotation){
 	case 1:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)+1;
-	    P2X=location.get(3)+1;
-	    P3Y=location.get(4)-1;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6)-2;
-	    P4X=location.get(7);
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==2 && r==1)||(c==0 && r==1)||(c==0 && r==0)){
+			miniGrid[c][r]=Color.GRAY;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 2:
-	     _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)+1;
-	    P2X=location.get(3)-1;
-	    P3Y=location.get(4)-1;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6);
-	    P4X=location.get(7)+2;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==0)||(c==1 && r==2)||(c==2 && r==0)){
+			miniGrid[c][r]=Color.GRAY;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 3:
-	     _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)-1;
-	    P2X=location.get(3)-1;
-	    P3Y=location.get(4)+1;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6)+2;
-	    P4X=location.get(7);
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==1)||(c==2 && r==1)||(c==2 && r==2)){
+			miniGrid[c][r]=Color.GRAY;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 4:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)-1;
-	    P2X=location.get(3)+1;
-	    P3Y=location.get(4)+1;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6);
-	    P4X=location.get(7)-2;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==0)||(c==1 && r==2)||(c==0 && r==2)){
+			miniGrid[c][r]=Color.GRAY;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	}
-	ArrayList<Integer> NewLocation = new ArrayList<Integer>();
-	NewLocation.add(_pieceY);
-	NewLocation.add(_pieceX);
-	NewLocation.add(P2Y);
-	NewLocation.add(P2X);
-	NewLocation.add(P3Y);
-	NewLocation.add(P3X);
-	NewLocation.add(P4Y);
-	NewLocation.add(P4X);
-	return (NewLocation);
+        
     }
 
-     private ArrayList<Integer> Tshape(){
+     private void Tshape(){
 	switch(rotation){
 	case 1:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)+1;
-	    P2X=location.get(3)+1;
-	    P3Y=location.get(4)-1;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6)+1;
-	    P4X=location.get(7)-1;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==2 && r==1)||(c==1 && r==0)||(c==1 && r==2)){
+			miniGrid[c][r]=Color.BLUE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 2:
-	     _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)+1;
-	    P2X=location.get(3)-1;
-	    P3Y=location.get(4)+1;
-	    P3X=location.get(5)+1;
-	    P4Y=location.get(6)-1;
-	    P4X=location.get(7)-1;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==2)||(c==0 && r==1)||(c==2 && r==1)){
+			miniGrid[c][r]=Color.BLUE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 3:
-	     _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)-1;
-	    P2X=location.get(3)-1;
-	    P3Y=location.get(4)+1;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6)-1;
-	    P4X=location.get(7)+1;
+	    miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==0 && r==1)||(c==1 && r==0)||(c==1 && r==2)){
+			miniGrid[c][r]=Color.BLUE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
 	case 4:
-	    _pieceY=location.get(0);
-	    _pieceX=location.get(1);
-	    P2Y=location.get(2)-1;
-	    P2X=location.get(3)+1;
-	    P3Y=location.get(4)-1;
-	    P3X=location.get(5)-1;
-	    P4Y=location.get(6)+1;
-	    P4X=location.get(7)+1;
+	   miniGrid=new Color[4][4];
+	    for (int c=0; c<4; c++){
+		for (int r=0; r<4; r++){
+		    if((r==1 && c==1)||(c==1 && r==0)||(c==0 && r==1)||(c==2 && r==1)){
+			miniGrid[c][r]=Color.BLUE;
+		    }
+		    else{
+			miniGrid[c][r]=Color.WHITE;
+		    }
+		}
+	    }
 	    break;
-	}
-	ArrayList<Integer> NewLocation = new ArrayList<Integer>();
-	NewLocation.add(_pieceY);
-	NewLocation.add(_pieceX);
-	NewLocation.add(P2Y);
-	NewLocation.add(P2X);
-	NewLocation.add(P3Y);
-	NewLocation.add(P3X);
-	NewLocation.add(P4Y);
-	NewLocation.add(P4X);
-	return (NewLocation);
+	}        
     }
 }
 
