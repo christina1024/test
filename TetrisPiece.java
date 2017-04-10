@@ -2,19 +2,15 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.awt.Color;
 public class TetrisPiece extends Gridy{
-    private Boolean speed=false;
     private String shape;
     private String direction;
     private int rotation=0;
     public int x=5;
-    public int y=5;
+    public int y=0;
     private Boolean hitSide=false;
     private Boolean hitBottom=false;
-    TetrisPiece tp;
     private Color[][] miniGrid;
     private Color[][]box1;
-
-    //Gridy grid=new Gridy();
     
     public TetrisPiece(){
 	shape=random();
@@ -55,7 +51,10 @@ public class TetrisPiece extends Gridy{
     public void setMovement(String direction1){
         direction=direction1;
 	PieceMovement();
-    }		 
+    }
+     public Boolean getHitBottom(){
+	return hitBottom;
+    }
     
     //store 4 sets of cordinates of 7 shapes in an array list called location.
     public void PieceShow(){	
@@ -156,20 +155,18 @@ public class TetrisPiece extends Gridy{
 	    break;
 	}      
     }
-    public void PieceMovement(){
-	
+    public void PieceMovement(){	
 	switch (direction){	    
 	    //moves left
 	case "a":
 	    x=x-1;
-	    //get(x,y,miniGrid);
 	    hitSide=wallCollision(x,y,miniGrid);
 	    if(hitSide==true){
 	        x=x+1;
 	    }
 	    break;	    
 	case "s":	    
-	    speed=true;
+	    dropping();
 	    break;
 	    
 	    //moves right
@@ -185,45 +182,45 @@ public class TetrisPiece extends Gridy{
 	    if (rotation > 4){
 		rotation=1;}
 	    else{
-		rotation=rotation+1;}
-	    GetShape();	 	    
+		rotation=rotation+1;
+	    }
+	    GetShape();
+	    hitSide=wallCollision(x,y,miniGrid);
+	    
+	    if(hitSide==true){
+		
+		if(rotation==1){
+		    rotation=4;}
+		else{
+		    rotation=rotation-1;}
+		GetShape();
+	    }
+	    hitSide=false;
+	    
 	}
     }
 
-    public void dropping(){
-	
-	if(!speed){
+    public void dropping(){	
 	    
 	    y=y+1;
 	    hitBottom=bottomCollision(x,y,miniGrid);
-	    if(hitBottom==true){
-		x=0;
+	    if(hitBottom==true){      	     	        			
+		update(x,y,miniGrid);
+		LineRemover();
+		endGame();
+		shape=random();
+		PieceShow();
+		rotation=0;
 		y=0;
-	        for (int c=0; c<4; c++){
-		    for (int r=0; r<4; r++){
-			miniGrid[c][r]=Color.WHITE;}
-		}
-	    }
-	    
-	}
-	else if(speed){
-	    y=y+2;
-	    hitBottom=bottomCollision(x,y,miniGrid);
-	    if(hitBottom==true){
-	        for (int c=0; c<4; c++){
-		    for (int r=0; r<4; r++){
-			miniGrid[c][r]=Color.WHITE;}
-		}
-	    }
-	    
-	}
+		x=5;
+	        
+	    }	    
     }
 
     //Rotation   
    public void GetShape(){
 	if (shape.equals("O")){
-	}
-	
+	}	
 	else if (shape.equals("L")){
 	    Lshape();
 	}
@@ -509,16 +506,3 @@ public class TetrisPiece extends Gridy{
 	}        
     }
 }
-
-	
-	
-
-
-	
-
-
-
-   
-
-    
-
